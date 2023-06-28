@@ -1,5 +1,5 @@
 import React from "react";
-import { Routes, Route, useNavigate } from "react-router-dom";
+import { Routes, Route, useNavigate, Navigate } from "react-router-dom";
 
 import css from "../index.css";
 
@@ -29,7 +29,26 @@ function App() {
   const [userEmail, setUserEmail] = React.useState("");
   const navigate = useNavigate();
 
+  // React.useEffect(() => {
+  //   Promise.all([api.getInitialCards(), api.getInitialUserInfo()])
+  //     .then(([cardData, userInfoData]) => {
+  //       setCurrentUser(userInfoData);
+  //       setCards(
+  //         cardData.map((data) => ({
+  //           likes: data.likes,
+  //           name: data.name,
+  //           link: data.link,
+  //           _id: data._id,
+  //           owner: data.owner,
+  //         }))
+  //       );
+  //     })
+  //     .catch((err) => console.log(err));
+  // }, []);
+
+
   React.useEffect(() => {
+    if(isLoggedIn) {
     Promise.all([api.getInitialCards(), api.getInitialUserInfo()])
       .then(([cardData, userInfoData]) => {
         setCurrentUser(userInfoData);
@@ -44,7 +63,9 @@ function App() {
         );
       })
       .catch((err) => console.log(err));
-  }, []);
+    }
+
+  }, [isLoggedIn]);
 
   const checkJwt = () => {
     const jwt = localStorage.getItem("jwt");
@@ -150,6 +171,9 @@ function App() {
         <Header userEmail={userEmail} />
 
         <Routes>
+
+        <Route path="*" element={ isLoggedIn ? <Navigate to="/" replace /> : <Navigate to="/signin" replace /> } />
+
           <Route path="/signup" element={<Register />} />
 
           <Route
